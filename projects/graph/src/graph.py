@@ -33,10 +33,22 @@ class Graph:
 
         while q.len() > 0:
             v = q.dequeue()
-            visited.add(v)
-            print(f'Visited: {visited}')
-            for next_vertex in self.vertices[str(v)]:
-                if next_vertex in visited:
-                    pass
-                else:
+            if v not in visited:
+                # print(f'Visited: {visited}')
+                print(f'BFT: {v}')
+                visited.add(v)
+                for next_vertex in self.vertices[v]:
                     q.enqueue(next_vertex)
+
+    def dft(self, start_vertex):
+        s = []
+        s.append(start_vertex)
+        visited = set()
+
+        while len(s) > 0:
+            v = s.pop()
+            if v not in visited:
+                print(f'DFT: {v}')  
+                visited.add(v)
+                for next_vert in self.vertices[v]:
+                    s.append(next_vert)
