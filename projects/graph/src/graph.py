@@ -58,19 +58,36 @@ class Graph:
     def bfs(self, start_vertex, target_vertex):
         q = Queue()
         visited = set()
-        path = []
-        path.append(start_vertex)
-        q.enqueue(path)
-
+        q.enqueue([start_vertex])
         
         while q.len() > 0:
             v = q.dequeue()
             if v[-1] not in visited:
+                print(f'BFS: {v}')
                 visited.add(v[-1])
                 if v[-1] == target_vertex:
-                    print(f'Take Path: {v}')
+                    print(f'BFS Path Take: {v}')
                     return v
                 for next_vertex in self.vertices[v[-1]]:
                     copy = v.copy()
                     copy.append(next_vertex)
                     q.enqueue(copy)
+                    
+    def dfs(self, start_vertex, target_vertex):
+        s = []
+        visited = set()
+        s.append([start_vertex])
+
+        while len(s) > 0:
+            v = s.pop()
+            if v[-1] not in visited:
+                print(f'DFS: {v}')
+                visited.add(v[-1])
+                if v[-1] == target_vertex:
+                    print(f'DFS Path Take: {v}')
+                    return v
+                print(f'DFS Visited: {visited}')
+                for next_vertex in self.vertices[v[-1]]:
+                    copy = v.copy()
+                    copy.append(next_vertex)
+                    s.append(copy)
