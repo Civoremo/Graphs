@@ -55,6 +55,18 @@ class Graph:
                 for next_vert in self.vertices[v]:
                     s.append(next_vert)
 
+    def dft_recursion(self, start_vertex, visited=None):
+        print(f'Recursion: {visited}')
+        if visited is None:
+            visited = set()
+        if start_vertex in visited:
+            return start_vertex
+        if start_vertex not in visited:
+            visited.add(start_vertex)
+            for next_vertex in self.vertices[start_vertex]:
+                return self.dft_recursion(next_vertex, visited)
+            
+
     def bfs(self, start_vertex, target_vertex):
         q = Queue()
         visited = set()

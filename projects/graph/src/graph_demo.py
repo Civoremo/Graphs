@@ -34,6 +34,8 @@ def main():
     graph.bft('1')
     print(f'\n----- Depth-First Traversal')
     graph.dft('1')
+    print(f'\n----- Depth-First Traversal Recursion')
+    graph.dft_recursion('1')
     print(f'\n----- Breadth-First Search')
     graph.bfs('1', '5')
     print(f'\n----- Depth-First Search')
