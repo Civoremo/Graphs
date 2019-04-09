@@ -32,18 +32,20 @@ def main():
 
     graph.bft('1')
     graph.dft('1')
+    graph.bfs('1', '5')
 
-    # graph = Graph()  # Instantiate your graph
-    # graph.add_vertex('0')
-    # graph.add_vertex('1')
-    # graph.add_vertex('2')
-    # graph.add_vertex('3')
-    # graph.add_edge('0', '1')
-    # graph.add_edge('0', '3')
-    # # graph.add_edge('0', '4')
-    # # print(f'second: {graph.vertices['0']}')
-    # graph.bft('0')
-    # # graph.dft(0)
+    graph1 = Graph()  # Instantiate your graph
+    graph1.add_vertex('0')
+    graph1.add_vertex('1')
+    graph1.add_vertex('2')
+    graph1.add_vertex('3')
+    graph1.add_edge('0', '1')
+    graph1.add_edge('0', '3')
+    # graph.add_edge('0', '4')
+    # print(f'second: {graph.vertices}')
+    graph1.bft('0')
+    graph1.dft('0')
+    graph1.bfs('0', '3')
 
 if __name__ == '__main__':
     # TODO - parse argv

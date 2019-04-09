@@ -37,6 +37,7 @@ class Graph:
                 # print(f'Visited: {visited}')
                 print(f'BFT: {v}')
                 visited.add(v)
+                print(f'BFT Visited: {visited}')
                 for next_vertex in self.vertices[v]:
                     q.enqueue(next_vertex)
 
@@ -50,5 +51,26 @@ class Graph:
             if v not in visited:
                 print(f'DFT: {v}')  
                 visited.add(v)
+                print(f'DFT Visited: {visited}')
                 for next_vert in self.vertices[v]:
                     s.append(next_vert)
+
+    def bfs(self, start_vertex, target_vertex):
+        q = Queue()
+        visited = set()
+        path = []
+        path.append(start_vertex)
+        q.enqueue(path)
+
+        
+        while q.len() > 0:
+            v = q.dequeue()
+            if v[-1] not in visited:
+                visited.add(v[-1])
+                if v[-1] == target_vertex:
+                    print(f'Take Path: {v}')
+                    return v
+                for next_vertex in self.vertices[v[-1]]:
+                    copy = v.copy()
+                    copy.append(next_vertex)
+                    q.enqueue(copy)
