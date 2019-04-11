@@ -26,59 +26,94 @@ player = Player("Name", world.startingRoom)
 
 
 # FILL THIS IN
-# traversalPath = ['n', 's']
+# keeps track of rooms we have visited
 traversalPath = []
+# used to map our own maze
 graph = {}
+# keeps track of path we have currently walked
+# used to walk back
+path = [] 
 
-graph[player.currentRoom.id] = {'n': '?', 's': '?', 'w': '?', 'e': '?'}
-print(f'LENGTH: {len(roomGraph)}')
+# appends to graph with the correct amount of exits
+# excludes non-existent ones
+def addToGraph(roomID, exits):
+    temp = {}
+    for i in exits:
+        temp.update({i: '?'})
+    graph[roomID] = temp
 
-#-------------------------------------------------
-# add room id to traversalPath
-# check room directions
+# set initial graph values
+addToGraph(player.currentRoom.id, player.currentRoom.getExits())
 
-# for each direction move player in that direction
-# if current room id not in traversalPath, add
-#   check room directions
-#   for each direction move player in that direction
-#   if current room id not in traversalPath, add
-#-------------------------------------------------
-
+# returns the opposite direction
+def getOpposite(dir):
+        if dir == 'n':
+            return 's'
+        elif dir == 's':
+            return 'n'
+        elif dir == 'w':
+            return 'e'
+        else:
+            return 'w'
 
 def mark_room(direction, id):
-        temp = ''
-        prev_room_id = id
-        player.travel(direction)
-        traversalPath.append(direction)
+    path.append(direction)
+    prev_room_id = id
+    player.travel(direction)
+    traversalPath.append(direction)
 
-        # if player moves to a new room, add a blank graph
-        if player.currentRoom.id not in graph:
-            graph[player.currentRoom.id] = {'n': '?', 's': '?', 'w': '?', 'e': '?'}
+    # if player moved to a new room, add a blank graph
+    if player.currentRoom.id not in graph:
+        addToGraph(player.currentRoom.id, player.currentRoom.getExits())
 
-        # update graph values of room we came from with current room info
-        for key, value in graph[prev_room_id].items():
-            if key == direction:
-                graph[prev_room_id][key] = player.currentRoom.id
+    # update graph values of room we came from with current room info
+    for key, value in graph[prev_room_id].items():
+        if key == direction:
+            graph[prev_room_id][key] = player.currentRoom.id
 
-        # we need to flip the values of the direction the player came from to update current room graph info
-        if direction == 'n':
-            temp = 's'
-        elif direction == 's':
-            temp == 'n'
-        elif direction == 'w':
-            temp = 'e'
+    # update graph value of current room with room info we came from
+    for key, value in graph[player.currentRoom.id].items():
+        if key == getOpposite(direction):
+            graph[player.currentRoom.id][key] = prev_room_id
+
+    if direction in player.currentRoom.getExits():
+        # print(f'there is another room in --{direction}-- direction')
+        mark_room(direction, player.currentRoom.id)
+    else:
+        if len(player.currentRoom.getExits()) > 1:
+            print(f'Reached the END')
         else:
-            temp = 'w'
+            # print(f'No other exits')
+            rev_path = path.pop()
+            checkLastRoom(getOpposite(rev_path))
+   
+def checkLastRoom(dir):
+    if any('?' in room.values() for room in graph.values()):
+        player.travel(dir)
+        traversalPath.append(dir)
+        # print(f'Room ID: {player.currentRoom.id}')
+        if '?' in graph[player.currentRoom.id].values():
+            # print(f'More rooms to explore')
+            if graph[player.currentRoom.id].get('n') == '?':
+                # print(f'N needs exploring')
+                mark_room('n', player.currentRoom.id)
+            elif graph[player.currentRoom.id].get('e') == '?':
+                # print(f'E needs exploring')
+                mark_room('e', player.currentRoom.id)
+            elif graph[player.currentRoom.id].get('s') == '?':
+                # print(f'S needs exploring')
+                mark_room('s', player.currentRoom.id)
+            else:
+                # print(f'W needs exploring')
+                mark_room('w', player.currentRoom.id)
+        else:
+            # print(f'All explored')
+            checkLastRoom(dir)
+    else:
+        print(f'Thats it')
 
-        # update graph value of current room with room info we came from
-        for key, value in graph[player.currentRoom.id].items():
-            if key == temp:
-                graph[player.currentRoom.id][key] = prev_room_id
+mark_room('n', 0)
 
-while len(traversalPath) < len(roomGraph):
-    for i in player.currentRoom.getExits():
-        # temp storage of room we came from
-        mark_room(i, player.currentRoom.id)
 print(f'{graph}')
 
 
