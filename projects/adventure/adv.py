@@ -2,7 +2,10 @@ from room import Room
 from player import Player
 from world import World
 
+import sys
 import random
+
+sys.setrecursionlimit(2500)
 
 # Load world
 world = World()
@@ -79,14 +82,13 @@ def mark_room(direction, id):
     if direction in player.currentRoom.getExits():
         # print(f'there is another room in --{direction}-- direction')
         mark_room(direction, player.currentRoom.id)
+    elif len(player.currentRoom.getExits()) > 1 and '?' in graph[player.currentRoom.id].values():
+        # print(f'Reached the END')
+        otherExits(player.currentRoom.id)
     else:
-        if len(player.currentRoom.getExits()) > 1:
-            # print(f'Reached the END')
-            otherExits(player.currentRoom.id)
-        else:
-            # print(f'No other exits')
-            rev_path = path.pop()
-            checkLastRoom(getOpposite(rev_path))
+        # print(f'No other exits')
+        rev_path = path.pop()
+        checkLastRoom(getOpposite(rev_path))
    
 def otherExits(roomID):
     if any('?' in room.values() for room in graph.values()):
@@ -137,7 +139,7 @@ def checkLastRoom(dir):
 
 mark_room('n', 0)
 
-print(f'{graph}')
+# print(f'{graph}')
 
 
 # TRAVERSAL TEST
