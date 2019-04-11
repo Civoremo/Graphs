@@ -29,7 +29,7 @@ player = Player("Name", world.startingRoom)
 
 
 # FILL THIS IN
-# keeps track of rooms we have visited
+# keeps track of directions we have taken
 traversalPath = []
 # used to map our own maze
 graph = {}
@@ -59,85 +59,75 @@ def getOpposite(dir):
         else:
             return 'w'
 
+# traverses rooms
 def mark_room(direction, id):
     path.append(direction)
     prev_room_id = id
     player.travel(direction)
     traversalPath.append(direction)
 
-    # if player moved to a new room, add a blank graph
-    if player.currentRoom.id not in graph:
-        addToGraph(player.currentRoom.id, player.currentRoom.getExits())
-
-    # update graph values of room we came from with current room info
-    for key, value in graph[prev_room_id].items():
-        if key == direction:
-            graph[prev_room_id][key] = player.currentRoom.id
-
-    # update graph value of current room with room info we came from
-    for key, value in graph[player.currentRoom.id].items():
-        if key == getOpposite(direction):
-            graph[player.currentRoom.id][key] = prev_room_id
+    updateOurGraph(prev_room_id, player.currentRoom.id, direction)
 
     if direction in player.currentRoom.getExits():
-        # print(f'there is another room in --{direction}-- direction')
         mark_room(direction, player.currentRoom.id)
     elif len(player.currentRoom.getExits()) > 1 and '?' in graph[player.currentRoom.id].values():
-        # print(f'Reached the END')
         otherExits(player.currentRoom.id)
     else:
-        # print(f'No other exits')
         rev_path = path.pop()
         checkLastRoom(getOpposite(rev_path))
+
+# updates our graph with room information
+def updateOurGraph(prevID, currentID, direction):
+    # if player moved to a new room, add a blank graph
+    if currentID not in graph:
+        addToGraph(currentID, player.currentRoom.getExits())
+
+    # update graph values of room we came from with current room info
+    for key, value in graph[prevID].items():
+        if key == direction:
+            graph[prevID][key] = currentID
+
+    # update graph value of current room with room info we came from
+    for key, value in graph[currentID].items():
+        if key == getOpposite(direction):
+            graph[currentID][key] = prevID
    
+# if we walk to the end of direction, we want to check if there are other directions we can go from this room
 def otherExits(roomID):
     if any('?' in room.values() for room in graph.values()):
         if '?' in graph[roomID].values():
-            # print(f'More rooms to explore')
             if graph[player.currentRoom.id].get('n') == '?':
-                # print(f'N needs exploring')
                 mark_room('n', player.currentRoom.id)
             elif graph[player.currentRoom.id].get('e') == '?':
-                # print(f'E needs exploring')
                 mark_room('e', player.currentRoom.id)
             elif graph[player.currentRoom.id].get('s') == '?':
-                # print(f'S needs exploring')
                 mark_room('s', player.currentRoom.id)
             else:
-                # print(f'W needs exploring')
                 mark_room('w', player.currentRoom.id)
         else:
-            print(f'OTHER EXITS ISSUE')
-            # rev_path = path.pop()
-            # checkLastRoom(getOpposite(rev_path))
+            print(f'OTHER EXITS ERROR')
 
+# if we walked into a dead end, we want to walk back to previous room to check for other exits
 def checkLastRoom(dir):
     if any('?' in room.values() for room in graph.values()):
         player.travel(dir)
         traversalPath.append(dir)
-        # print(f'Room ID: {player.currentRoom.id}')
         if '?' in graph[player.currentRoom.id].values():
-            # print(f'More rooms to explore')
             if graph[player.currentRoom.id].get('n') == '?':
-                # print(f'N needs exploring')
                 mark_room('n', player.currentRoom.id)
             elif graph[player.currentRoom.id].get('e') == '?':
-                # print(f'E needs exploring')
                 mark_room('e', player.currentRoom.id)
             elif graph[player.currentRoom.id].get('s') == '?':
-                # print(f'S needs exploring')
                 mark_room('s', player.currentRoom.id)
             else:
-                # print(f'W needs exploring')
                 mark_room('w', player.currentRoom.id)
         else:
-            # print(f'All explored')
             rev_path = path.pop()
             checkLastRoom(getOpposite(rev_path))
     else:
         print(f'Thats it')
 
-mark_room('n', 0)
+mark_room('n', player.currentRoom.id)
 
 # print(f'{graph}')
 
